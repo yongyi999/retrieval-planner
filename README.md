@@ -41,6 +41,7 @@
 │   ├── sft_baseline/        # 基线 SFT LoRA
 │   ├── opd/round_1/2/3/     # 三轮 OPD LoRA（round_3 为最终版）
 │   └── eval/                # 评估结果 summary.json + 各模型输出
+├── run.py                   # 交互式启动脚本（输入问题→输出规划）
 ├── .env                     # DEEPSEEK_API_KEY / SWANLAB_API_KEY（不入库）
 └── requirements.txt
 ```
@@ -81,14 +82,94 @@ uv run python scripts/05_opd_loop.py         # 步骤 1：OPD 循环
 uv run python scripts/06_evaluate.py         # 评估对比
 ```
 
-单独推理：
+交互式启动（推荐）：
+
+```powershell
+.\.venv\Scripts\python.exe run.py
+```
+
+出现 `问题>` 后输入研究问题、回车即可（生成约需 10~30 秒），输入 `q` 退出。
+
+在代码中调用：
 
 ```python
 from utils.inference import StudentModel
 m = StudentModel(adapter_path="outputs/opd/round_3")
-plan, raw = m.generate("你的研究问题……")
+plan, raw, errors = m.generate("你的研究问题……")  # 返回 (规划|None, 原文, 错误)
 print(plan)
 ```
+
+---
+
+## 试运行示例
+
+输入：`帮我规划下北京旅游路线`，最终模型（`outputs/opd/round_3`，temperature=0.3）输出：
+
+```json
+{
+  "goal": "制定一条包含必游景点、特色美食、文化体验和住宿推荐的北京旅游线路，满足不同游客需求，包括亲子、情侣、背包客等。",
+  "steps": [
+    {
+      "id": 1,
+      "action": "search",
+      "query": "北京必游景点 地铁导航 景点分布",
+      "purpose": "获取北京主要景点的位置信息及地铁导航，为后续行程安排提供基础。",
+      "depends_on": []
+    },
+    {
+      "id": 2,
+      "action": "search",
+      "query": "北京特色美食 推荐餐厅 餐厅评价",
+      "purpose": "收集北京最具代表性的美食种类及其代表性餐厅，丰富饮食体验。",
+      "depends_on": []
+    },
+    {
+      "id": 3,
+      "action": "search",
+      "query": "北京文化体验 地域文化 文物古迹 美术馆",
+      "purpose": "了解北京的文化内涵与历史遗迹，增加深度体验内容。",
+      "depends_on": []
+    },
+    {
+      "id": 4,
+      "action": "search",
+      "query": "北京住宿推荐 评分 大酒店 小众民宿",
+      "purpose": "获取北京不同预算和需求下的住宿选择，涵盖酒店、民宿等多种类型。",
+      "depends_on": []
+    },
+    {
+      "id": 5,
+      "action": "search",
+      "query": "北京亲子游 家庭活动 游乐园 学校参观",
+      "purpose": "针对家庭游客的需求，搜集亲子友好型景点和活动建议。",
+      "depends_on": [1]
+    },
+    {
+      "id": 6,
+      "action": "search",
+      "query": "北京情侣游 花园 高档酒店 摄影地点",
+      "purpose": "针对情侣游客的需求，搜集浪漫氛围、高档酒店和摄影打卡地。",
+      "depends_on": [1]
+    },
+    {
+      "id": 7,
+      "action": "search",
+      "query": "北京背包客游 自然风光 漫步公园 青年旅社",
+      "purpose": "针对背包客游客的需求，搜集自然风光、徒步和青年旅社等户外体验。",
+      "depends_on": [1]
+    },
+    {
+      "id": 8,
+      "action": "search",
+      "query": "北京旅游线路设计 北京一日游 北京二日游 北京三日游",
+      "purpose": "综合以上要素，设计一条完整的北京旅游线路，考虑时长、性价比和多样性。",
+      "depends_on": [1, 2, 3, 4]
+    }
+  ]
+}
+```
+
+模型把一个开放问题拆成 **8 个搜索步骤**：先并行获取景点、美食、文化、住宿等基础信息（无依赖），再针对亲子 / 情侣 / 背包客等不同人群细分（依赖步骤 1），最后综合形成线路（依赖前面多个步骤），`depends_on` 关系正确、无环路。
 
 ---
 
