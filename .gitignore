@@ -1,0 +1,26 @@
+# ===== 密钥 / 环境（绝不提交）=====
+.env
+.env.*
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ===== 虚拟环境 =====
+.venv/
+venv/
+
+# ===== 实验跟踪本地日志 =====
+swanlog/
+wandb/
+runs/
+
+# ===== 打包文件 =====
+*.zip
+
+# ===== 系统 / IDE =====
+.DS_Store
+.idea/
+.vscode/

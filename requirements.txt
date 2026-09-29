@@ -1,0 +1,16 @@
+﻿# 核心依赖（Python 3.11，Windows + NVIDIA 8GB 显存验证通过）
+# 安装：uv pip install -r requirements.txt
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.9.1+cu128
+transformers==5.17.0
+accelerate==1.15.0
+peft==0.21.0
+trl==1.13.0
+datasets==5.0.1
+modelscope==1.40.1
+openai==3.17.0
+swanlab==0.10.0
+python-dotenv==1.2.3
+sentencepiece==0.2.2
+safetensors==0.8.0
+einops==0.8.2

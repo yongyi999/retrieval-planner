@@ -1,0 +1,26 @@
+[
+  {
+    "name": "base",
+    "valid_rate": 0.7333333333333333,
+    "valid": 22,
+    "total": 30,
+    "avg_score": 5.318181818181818,
+    "avg_steps": 4.318181818181818
+  },
+  {
+    "name": "sft",
+    "valid_rate": 0.9333333333333333,
+    "valid": 28,
+    "total": 30,
+    "avg_score": 6.964285714285714,
+    "avg_steps": 5.75
+  },
+  {
+    "name": "opd_final",
+    "valid_rate": 0.8666666666666667,
+    "valid": 26,
+    "total": 30,
+    "avg_score": 7.0,
+    "avg_steps": 6.423076923076923
+  }
+]
